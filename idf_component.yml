@@ -1,5 +1,5 @@
-version: 0.1.0
-description: CE2727A power meter driver (RS485/UART)
+version: 0.2.0
+description: CE2727A (CE2726A) power meter driver (RS485/UART). Драйвер счетчика электроэнергии ЦЭ2727А (ЦЭ2726А).
 
 url: https://github.com/latonita/ce2727a-driver
 issues: https://github.com/latonita/ce2727a-driver/issues
