@@ -1,4 +1,4 @@
-version: 1.0.0
+version: 1.0.1
 description: CE2727A  RS485/UART driver
 
 url: https://github.com/latonita/ce2727a-driver

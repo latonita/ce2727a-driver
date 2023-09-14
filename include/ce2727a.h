@@ -11,23 +11,23 @@ extern "C" {
  * @brief CE2727A driver configuration
  */
 typedef struct ce2727a_config_t {
-    uart_config_t uart_config;
-    uint8_t uart_port;
-    uint32_t addr;
-    uint32_t password;
-    uint8_t * rx_buffer;  // receive buffer
-    uint16_t rx_buffer_size;
+    uart_config_t uart_config; /*!< UART port configuration parameters like baud rate and parity*/
+    uint8_t uart_port; /*!< UART port number*/
+    uint32_t addr;  /*!< Target power meter address, default is 0x0 - broadcasting to all meters  */
+    uint32_t password;  /*!< Target power meter password, default is 0x0 */
+    uint8_t * rx_buffer;   /*!< Receive buffer. Shall be enough to hold required responses */
+    uint16_t rx_buffer_size;  /*!< Size of receive buffer */
 } ce2727a_config_t;
 
 /**
  * @brief CE2727A readings
 */
 typedef struct ce2727a_readings_energy_t {
-    uint8_t active_tariff;
-    uint32_t t1;
-    uint32_t t2;
-    uint32_t t3;
-    uint32_t t4;
+    uint8_t active_tariff;  /*!< Currently active tariff 1...4 */
+    uint32_t t1;  /*!< Cumulative energy for tariff 1 */
+    uint32_t t2;  /*!< Cumulative energy for tariff 2 */
+    uint32_t t3;  /*!< Cumulative energy for tariff 3 */
+    uint32_t t4;  /*!< Cumulative energy for tariff 4 */
 } ce2727a_readings_energy_t;
 
 /**

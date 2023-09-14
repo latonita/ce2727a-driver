@@ -2,88 +2,127 @@
 
 ## Header files
 
-- [include/pa1010d.h](#file-includepa1010dh)
+- [include/ce2727a.h](#file-includece2727ah)
 
-## File include/pa1010d.h
+## File include/ce2727a.h
 
 ## Structures and Types
 
 | Type | Name |
 | ---: | :--- |
-| struct | [**pa1010d\_config\_t**](#struct-pa1010d_config_t) <br>_PA1010D driver configuration._ |
-| typedef struct pa1010d\_t \* | [**pa1010d\_handle\_t**](#typedef-pa1010d_handle_t)  <br>_PA1010D driver handle._ |
+| struct | [**ce2727a\_config\_t**](#struct-ce2727a_config_t) <br>_CE2727A driver configuration._ |
+| typedef  | [**ce2727a\_config\_t**](#typedef-ce2727a_config_t)  <br>_CE2727A driver configuration._ |
+| typedef struct ce2727a\_t \* | [**ce2727a\_handle\_t**](#typedef-ce2727a_handle_t)  <br>_CE2727A driver handle._ |
+| struct | [**ce2727a\_readings\_energy\_t**](#struct-ce2727a_readings_energy_t) <br>_CE2727A readings._ |
+| typedef  | [**ce2727a\_readings\_energy\_t**](#typedef-ce2727a_readings_energy_t)  <br>_CE2727A readings._ |
 
 ## Functions
 
 | Type | Name |
 | ---: | :--- |
-|  esp\_err\_t | [**pa1010d\_deinit**](#function-pa1010d_deinit) (pa1010d\_handle\_t handle) <br>_Deinitialize the PA1010D driver._ |
-|  esp\_err\_t | [**pa1010d\_get\_nmea\_msg**](#function-pa1010d_get_nmea_msg) (pa1010d\_handle\_t handle, char \* out\_buf, size\_t out\_buf\_len, unsigned timeout\_ms) <br>_Get the NMEA message from the GPS._ |
-|  esp\_err\_t | [**pa1010d\_init**](#function-pa1010d_init) (const [**pa1010d\_config\_t**](#struct-pa1010d_config_t)\* config, pa1010d\_handle\_t \* out\_handle) <br>_Initialize the PA1010D driver._ |
+|  esp\_err\_t | [**ce2727a\_deinit**](#function-ce2727a_deinit) (ce2727a\_handle\_t handle) <br>_Deinitialize the CE2727A driver._ |
+|  esp\_err\_t | [**ce2727a\_get\_active\_power**](#function-ce2727a_get_active_power) (ce2727a\_handle\_t handle, uint32\_t \* active\_power, uint16\_t timeout\_ms) <br>_Get active power._ |
+|  esp\_err\_t | [**ce2727a\_get\_energy**](#function-ce2727a_get_energy) (ce2727a\_handle\_t handle, [**ce2727a\_readings\_energy\_t**](#struct-ce2727a_readings_energy_t)\* readings, uint16\_t timeout\_ms) <br>_Get energy readings._ |
+|  esp\_err\_t | [**ce2727a\_init**](#function-ce2727a_init) (const [**ce2727a\_config\_t**](#struct-ce2727a_config_t)\* config, ce2727a\_handle\_t \* out\_handle) <br>_Initialize the CE2727A driver._ |
 
 
 ## Structures and Types Documentation
 
-### struct `pa1010d_config_t`
+### struct `ce2727a_config_t`
 
-_PA1010D driver configuration._
+_CE2727A driver configuration._
 Variables:
 
--  uint8\_t i2c_dev_addr  <br>I2C device address of the GPS. Typically 0x10.
+-  uint32\_t addr  <br>Target power meter address, default is 0x0 - broadcasting to all meters
 
--  i2c\_port\_t i2c_port  <br>I2C bus number to which the GPS is connected
+-  uint32\_t password  <br>Target power meter password, default is 0x0
 
-### typedef `pa1010d_handle_t`
+-  uint8\_t \* rx_buffer  <br>Receive buffer. Shall be enough to hold required responses
 
-_PA1010D driver handle._
+-  uint16\_t rx_buffer_size  <br>Size of receive buffer
+
+-  uart\_config\_t uart_config  <br>UART port configuration parameters like baud rate and parity
+
+-  uint8\_t uart_port  <br>UART port number
+
+### typedef `ce2727a_config_t`
+
+_CE2727A driver configuration._
 ```c
-typedef struct pa1010d_t* pa1010d_handle_t;
+typedef struct ce2727a_config_t ce2727a_config_t;
+```
+
+### typedef `ce2727a_handle_t`
+
+_CE2727A driver handle._
+```c
+typedef struct ce2727a_t* ce2727a_handle_t;
+```
+
+### struct `ce2727a_readings_energy_t`
+
+_CE2727A readings._
+Variables:
+
+-  uint8\_t active_tariff  <br>Currently active tariff 1...4
+
+-  uint32\_t t1  <br>Cumulative energy for tariff 1
+
+-  uint32\_t t2  <br>Cumulative energy for tariff 2
+
+-  uint32\_t t3  <br>Cumulative energy for tariff 3
+
+-  uint32\_t t4  <br>Cumulative energy for tariff 4
+
+### typedef `ce2727a_readings_energy_t`
+
+_CE2727A readings._
+```c
+typedef struct ce2727a_readings_energy_t ce2727a_readings_energy_t;
 ```
 
 
 ## Functions Documentation
 
-### function `pa1010d_deinit`
+### function `ce2727a_deinit`
 
-_Deinitialize the PA1010D driver._
+_Deinitialize the CE2727A driver._
 ```c
-esp_err_t pa1010d_deinit (
-    pa1010d_handle_t handle
+esp_err_t ce2727a_deinit (
+    ce2727a_handle_t handle
 ) 
 ```
 
 **Parameters:**
 
 
-* `handle` Driver handle obtained from pa1010d\_init(), or NULL 
+* `handle` Driver handle obtained from ce2727a\_init(), or NULL 
 
 
 **Returns:**
 
 esp\_err\_t ESP\_OK on success.
-### function `pa1010d_get_nmea_msg`
+### function `ce2727a_get_active_power`
 
-_Get the NMEA message from the GPS._
+_Get active power._
 ```c
-esp_err_t pa1010d_get_nmea_msg (
-    pa1010d_handle_t handle,
-    char * out_buf,
-    size_t out_buf_len,
-    unsigned timeout_ms
+esp_err_t ce2727a_get_active_power (
+    ce2727a_handle_t handle,
+    uint32_t * active_power,
+    uint16_t timeout_ms
 ) 
 ```
 
-Reads the NMEA message from the GPS. The resulting string is stripped of CR, LF and is null-terminated.
+Get current active power
 
 
 
 **Parameters:**
 
 
-* `handle` Driver handle obtained from pa1010d\_init() 
-* `out_buf` Destination buffer for the NMEA message, has to be at least 4 bytes long 
-* `out_buf_len` Length of the destination buffer in bytes 
-* `timeout_ms` Timeout in milliseconds for receiving a single character 
+* `handle` Driver handle obtained from ce2727a\_init() 
+* `active_power` OUT active power 
+* `timeout_ms` Timeout in milliseconds for receiving a response from the meter 
 
 
 **Returns:**
@@ -92,13 +131,46 @@ esp\_err\_t
 * ESP\_OK on success
 * ESP\_ERR\_TIMEOUT if no message was received within the timeout
 * ESP\_ERR\_INVALID\_ARG if the buffer too short
-### function `pa1010d_init`
+* ESP\_ERR\_INVALID\_RESPONSE
+* ESP\_ERR\_INVALID\_CRC
+### function `ce2727a_get_energy`
 
-_Initialize the PA1010D driver._
+_Get energy readings._
 ```c
-esp_err_t pa1010d_init (
-    const pa1010d_config_t * config,
-    pa1010d_handle_t * out_handle
+esp_err_t ce2727a_get_energy (
+    ce2727a_handle_t handle,
+    ce2727a_readings_energy_t * readings,
+    uint16_t timeout_ms
+) 
+```
+
+Get energy readings
+
+
+
+**Parameters:**
+
+
+* `handle` Driver handle obtained from ce2727a\_init() 
+* `readings` Destination for readings 
+* `timeout_ms` Timeout in milliseconds for receiving a response from the meter 
+
+
+**Returns:**
+
+esp\_err\_t
+* ESP\_OK on success
+* ESP\_ERR\_TIMEOUT if no message was received within the timeout
+* ESP\_ERR\_INVALID\_ARG if the buffer too short
+* ESP\_ERR\_INVALID\_RESPONSE
+* ESP\_ERR\_INVALID\_CRC
+### function `ce2727a_init`
+
+_Initialize the CE2727A driver._
+```c
+esp_err_t ce2727a_init (
+    const ce2727a_config_t * config,
+    ce2727a_handle_t * out_handle
 ) 
 ```
 
