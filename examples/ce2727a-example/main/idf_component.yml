@@ -1,0 +1,4 @@
+dependencies:
+  latonita/ce2727a-driver:
+    version: "*"
+    override_path: '../../../'
