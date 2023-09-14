@@ -14,7 +14,7 @@ If a pre-commit hook has modified any of the files when you run `git commit`, ad
 
 ## Release process
 
-The version of this is tracked using Git tags. CI workflow in [.github/workflows/upload_component.yml](.github/workflows/upload_component.yml) runs for every Git tag and uploads the new version [to the component registry](https://components.espressif.com/components/igrr/pa1010d).
+The version of this is tracked using Git tags. CI workflow in [.github/workflows/upload_component.yml](.github/workflows/upload_component.yml) runs for every Git tag and uploads the new version [to the component registry](https://components.espressif.com/components/latonita/ce2727a-driver).
 
 To make a release:
 1. Decide on the new version number.

@@ -17,7 +17,7 @@
                 ],
                 "limitSymbolsToIncludedHeaders": false
             },
-            "compilerPath": "/usr/bin/gcc",
+            "compilerPath": "C:/Esp/tools/xtensa-esp32-elf/esp-12.2.0_20230208/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc.exe",
             "compileCommands": "${workspaceFolder}/examples/ce2727a-example/build/compile_commands.json"
         }
     ],

@@ -6,16 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [1.0.0] - 2023-09-10
+- Command: Request general information
+- Command: Request date/time
 
-- Added pre-commit hooks
-- Added CI workflow
-- Added contributing and changelog pages
-
-## [0.0.3] - 2023-07-27
-
-- Added API reference
-
-## [0.0.2] - 2023-07-27
+## [0.1.0] - 2023-09-15
 
 - Initial release

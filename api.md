@@ -11,10 +11,8 @@
 | Type | Name |
 | ---: | :--- |
 | struct | [**ce2727a\_config\_t**](#struct-ce2727a_config_t) <br>_CE2727A driver configuration._ |
-| typedef  | [**ce2727a\_config\_t**](#typedef-ce2727a_config_t)  <br>_CE2727A driver configuration._ |
-| typedef struct ce2727a\_t \* | [**ce2727a\_handle\_t**](#typedef-ce2727a_handle_t)  <br>_CE2727A driver handle._ |
+| typedef struct ce2727a\_driver\_state\_t \* | [**ce2727a\_handle\_t**](#typedef-ce2727a_handle_t)  <br>_CE2727A driver handle._ |
 | struct | [**ce2727a\_readings\_energy\_t**](#struct-ce2727a_readings_energy_t) <br>_CE2727A readings._ |
-| typedef  | [**ce2727a\_readings\_energy\_t**](#typedef-ce2727a_readings_energy_t)  <br>_CE2727A readings._ |
 
 ## Functions
 
@@ -41,22 +39,21 @@ Variables:
 
 -  uint16\_t rx_buffer_size  <br>Size of receive buffer
 
--  uart\_config\_t uart_config  <br>UART port configuration parameters like baud rate and parity
+-  uart\_config\_t \* uart_config_override  <br>UART port configuration override parameters. defaults: 9600,8E1
+
+-  uint8\_t uart_de_pin  <br>UART RTS pin for RS485 DE=!RE
 
 -  uint8\_t uart_port  <br>UART port number
 
-### typedef `ce2727a_config_t`
+-  uint8\_t uart_rx_pin  <br>UART RX pin
 
-_CE2727A driver configuration._
-```c
-typedef struct ce2727a_config_t ce2727a_config_t;
-```
+-  uint8\_t uart_tx_pin  <br>UART TX pin
 
 ### typedef `ce2727a_handle_t`
 
 _CE2727A driver handle._
 ```c
-typedef struct ce2727a_t* ce2727a_handle_t;
+typedef struct ce2727a_driver_state_t* ce2727a_handle_t;
 ```
 
 ### struct `ce2727a_readings_energy_t`
@@ -64,7 +61,7 @@ typedef struct ce2727a_t* ce2727a_handle_t;
 _CE2727A readings._
 Variables:
 
--  uint8\_t active_tariff  <br>Currently active tariff 1...4
+-  uint8\_t active_tariff  <br>Current active tariff [1,2,3,4]
 
 -  uint32\_t t1  <br>Cumulative energy for tariff 1
 
@@ -74,12 +71,7 @@ Variables:
 
 -  uint32\_t t4  <br>Cumulative energy for tariff 4
 
-### typedef `ce2727a_readings_energy_t`
-
-_CE2727A readings._
-```c
-typedef struct ce2727a_readings_energy_t ce2727a_readings_energy_t;
-```
+-  uint32\_t total  <br>Cumulative energy consumed on all tariffs
 
 
 ## Functions Documentation
@@ -121,7 +113,7 @@ Get current active power
 
 
 * `handle` Driver handle obtained from ce2727a\_init() 
-* `active_power` OUT active power 
+* `active_power` Active power 
 * `timeout_ms` Timeout in milliseconds for receiving a response from the meter 
 
 
@@ -133,6 +125,7 @@ esp\_err\_t
 * ESP\_ERR\_INVALID\_ARG if the buffer too short
 * ESP\_ERR\_INVALID\_RESPONSE
 * ESP\_ERR\_INVALID\_CRC
+* ESP\_ERR\_INVALID\_STATE Issues sending data
 ### function `ce2727a_get_energy`
 
 _Get energy readings._
@@ -164,6 +157,7 @@ esp\_err\_t
 * ESP\_ERR\_INVALID\_ARG if the buffer too short
 * ESP\_ERR\_INVALID\_RESPONSE
 * ESP\_ERR\_INVALID\_CRC
+* ESP\_ERR\_INVALID\_STATE Issues sending data
 ### function `ce2727a_init`
 
 _Initialize the CE2727A driver._

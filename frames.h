@@ -2,8 +2,9 @@
 
 #include <stdio.h>
 
-#pragma pack (1)
-typedef struct {
+#pragma pack(1)
+typedef struct
+{
     uint8_t two;
     uint8_t length;
     uint32_t address;
@@ -12,12 +13,14 @@ typedef struct {
     uint8_t id;
 } ce2727a_frame_header_t;
 
-typedef struct {
+typedef struct
+{
     ce2727a_frame_header_t header;
     uint16_t crc16;
 } ce2727a_request_command_t;
 
-typedef struct {
+typedef struct
+{
     ce2727a_frame_header_t header;
     uint8_t second;
     uint8_t minute;
@@ -31,13 +34,15 @@ typedef struct {
     uint16_t crc16;
 } ce2727a_response_date_time_t;
 
-typedef struct {
+typedef struct
+{
     ce2727a_frame_header_t header;
     uint32_t activePower;
     uint16_t crc16;
 } ce2727a_response_active_power_t;
 
-typedef struct {
+typedef struct
+{
     ce2727a_frame_header_t header;
     uint8_t currentTariff;
     uint32_t total;
@@ -47,4 +52,4 @@ typedef struct {
     uint32_t t4;
     uint16_t crc16;
 } ce2727a_response_consumed_energy_t;
-#pragma pack (0)
+#pragma pack(0)

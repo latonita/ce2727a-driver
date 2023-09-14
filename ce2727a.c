@@ -11,6 +11,8 @@
 
 uint16_t crc16iec(const uint8_t *buffer, uint16_t len);
 
+static const char *TAG = "ce2727a-driver";
+
 #define CHECK(x)                \
     do                          \
     {                           \
@@ -32,33 +34,40 @@ uint16_t crc16iec(const uint8_t *buffer, uint16_t len);
 #define ENQ_CMD_CONSUMED_ENERGY 0x03
 
 // driver state
-struct ce2727a_t
+struct ce2727a_driver_state_t
 {
     ce2727a_config_t config;
     ce2727a_request_command_t *tx_buffer;
     uint16_t tx_buffer_size;
 };
 
+uart_config_t default_uart_config = {
+    .baud_rate = 9600,
+    .data_bits = UART_DATA_8_BITS,
+    .parity = UART_PARITY_EVEN,
+    .stop_bits = UART_STOP_BITS_1,
+    .flow_ctrl = UART_HW_FLOWCTRL_DISABLE};
+
 esp_err_t ce2727a_init(const ce2727a_config_t *config, ce2727a_handle_t *out_handle)
 {
-    struct ce2727a_t *result = calloc(1, sizeof(struct ce2727a_t));
-    if (result == NULL)
+    struct ce2727a_driver_state_t *driver_state = calloc(1, sizeof(struct ce2727a_driver_state_t));
+    if (driver_state == NULL)
     {
         return ESP_ERR_NO_MEM;
     }
-    result->tx_buffer = calloc(1, sizeof(ce2727a_request_command_t));
-    if (result->tx_buffer == NULL)
+    driver_state->tx_buffer = calloc(1, sizeof(ce2727a_request_command_t));
+    if (driver_state->tx_buffer == NULL)
     {
         return ESP_ERR_NO_MEM;
     }
-    result->tx_buffer_size = sizeof(ce2727a_request_command_t);
-    result->config = *config;
-    *out_handle = result;
+    driver_state->tx_buffer_size = sizeof(ce2727a_request_command_t);
+    driver_state->config = *config;
+    *out_handle = driver_state;
 
-    ESP_ERROR_CHECK(
-        uart_param_config(config->uart_port, &config->uart_config));
-    ESP_ERROR_CHECK(
-        uart_driver_install(config->uart_port, 256, 0, 0, NULL, 0));
+    ESP_ERROR_CHECK(uart_param_config(config->uart_port, (config->uart_config_override != NULL ? config->uart_config_override : &default_uart_config)));
+    ESP_ERROR_CHECK(uart_set_pin(config->uart_port, config->uart_tx_pin, config->uart_rx_pin, config->uart_de_pin, UART_PIN_NO_CHANGE));
+    ESP_ERROR_CHECK(uart_driver_install(config->uart_port, 256, 0, 0, NULL, 0));
+    ESP_ERROR_CHECK(uart_set_mode(UART_NUM_2, UART_MODE_RS485_HALF_DUPLEX));
 
     return ESP_OK;
 }
@@ -92,8 +101,13 @@ esp_err_t ce2727a_send_enq_cmd(ce2727a_handle_t handle, uint8_t com_id, uint16_t
         return ESP_ERR_INVALID_STATE;
 #endif
 
-    uart_flush(handle->config.uart_port);
-    uart_write_bytes(handle->config.uart_port, (char *)handle->tx_buffer, handle->tx_buffer_size);
+    ESP_ERROR_CHECK(uart_flush(handle->config.uart_port));
+    int bytes_pushed = uart_write_bytes(handle->config.uart_port, (char *)handle->tx_buffer, handle->tx_buffer_size);
+    if (bytes_pushed != handle->tx_buffer_size)
+    {
+        ESP_LOGE(TAG, "uart_write_bytes couldn't write frame. shall be: %d, written: %d", handle->tx_buffer_size, bytes_pushed);
+        return ESP_ERR_INVALID_STATE;
+    }
     return ESP_OK;
 }
 
@@ -116,7 +130,6 @@ esp_err_t ce2727a_receive_proper_response(ce2727a_handle_t handle, uint16_t expe
         return ESP_ERR_INVALID_RESPONSE;
     }
 
-    // Check CRC
     u_int16_t *p_crc = (u_int16_t *)(handle->config.rx_buffer + expected_response_size - 2);
     if (crc16iec(handle->config.rx_buffer, expected_response_size - 2) != *p_crc)
     {
@@ -156,6 +169,7 @@ esp_err_t ce2727a_get_energy(ce2727a_handle_t handle, ce2727a_readings_energy_t 
     ce2727a_response_consumed_energy_t *res = (ce2727a_response_consumed_energy_t *)handle->config.rx_buffer;
 
     readings->active_tariff = res->currentTariff;
+    readings->total = res->total;
     readings->t1 = res->t1;
     readings->t2 = res->t2;
     readings->t3 = res->t3;
