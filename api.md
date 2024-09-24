@@ -174,7 +174,6 @@ esp_err_t ce2727a_init (
 * `config` Pointer to the configuration struct. The driver makes a copy, so can point to a local variable. 
 * `out_handle` Pointer to a variable to receive the driver handle. 
 
-
 **Returns:**
 
 esp\_err\_t ESP\_OK on success, ESP\_ERR\_NO\_MEM if out of memory.
